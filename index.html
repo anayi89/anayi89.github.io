@@ -85,7 +85,7 @@
                     const items = xml.querySelectorAll("item");
                     items.forEach(item => {
                         const title = item.querySelector("title").textContent;
-const link = item.querySelector("link").textContent.split("&url=")[1].replaceAll("%3a",":").replaceAll("%2f","/");
+const link = item.querySelector("link").textContent.split("&url=")[1].replaceAll("%3a",":").replaceAll("%2f","/").split("&c=")[0];
                         const pubDate = item.querySelector("pubDate")?.textContent;
 
                         const feedItem = document.createElement("div");
