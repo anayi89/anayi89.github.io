@@ -65,24 +65,26 @@
 		"https://www.bing.com/news/search?q=OAuth&format=RSS"
 	]
 
-	for (url of urls) {
-		let response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`)
-		let data = await response.json()
-		let parser = new DOMParser()
-		let xml = parser.parseFromString(data.contents, "text/xml")
-		let items = xml.querySelectorAll("item")
-
-		for (item of items){
-			let title = item.querySelector("title").textContent
-			let link = item.querySelector("link").textContent.split("url=")[1].split("&c=")[0].replaceAll("%3a",":").replaceAll("%2f","/")
-			let pubDate = item.querySelector("pubDate").textContent
-
-			let feedItem = document.createElement("div")
-			feedItem.classList.add("feed-item")
-			document.getElementById("feed-container").appendChild(feedItem)
-			feedItem.innerHTML = `<a href="${link}" target="_blank">${title}</a><p class="date">Published: ${pubDate}</p>`
-    		}
-	}
+	Promise.all(
+		urls.map(async (url) => {
+			let response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`)
+			let data = await response.json()
+			let parser = new DOMParser()
+			let xml = parser.parseFromString(data.contents, "text/xml")
+			let items = xml.querySelectorAll("item")
+	
+			for (i = 0; i < items.length - 1; i++){
+				let title = items[i].querySelector("title").textContent
+				let link = items[i].querySelector("link").textContent.split("url=")[1].split("&c=")[0].replaceAll("%3a",":").replaceAll("%2f","/")
+				let pubDate = items[i].querySelector("pubDate").textContent
+				
+				let feedItem = document.createElement("div")
+				feedItem.classList.add("feed-item")
+				document.getElementById("feed-container").appendChild(feedItem)
+				feedItem.innerHTML = `<a href="${link}" target="_blank">${title}</a><p class="date">Published: ${pubDate}</p>`
+	    		}
+  		}),
+	)
     </script>
 </body>
 </html>
